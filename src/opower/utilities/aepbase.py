@@ -68,6 +68,8 @@ class AEPBase(ABC):
         username: str,
         password: str,
         optional_mfa_secret: Optional[str],
+        mfa_token: Optional[str],
+        mfa_code: Optional[str],
     ) -> str:
         """Login in AEP using user/pass and return the Opower access token."""
         # Clear cookies before logging in again, in case old ones are still around

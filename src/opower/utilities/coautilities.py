@@ -44,6 +44,8 @@ class COAUtilities(UtilityBase):
         username: str,
         password: str,
         optional_mfa_secret: Optional[str],
+        mfa_token: Optional[str],
+        mfa_code: Optional[str],
     ) -> Optional[str]:
         """Login to the utility website."""
         # Get cookies

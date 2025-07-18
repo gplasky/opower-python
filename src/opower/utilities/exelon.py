@@ -99,6 +99,8 @@ class Exelon:
         username: str,
         password: str,
         optional_mfa_secret: Optional[str],
+        mfa_token: Optional[str],
+        mfa_code: Optional[str],
     ) -> str:
         """Login to the utility website and authorize opower."""
         async with session.get(

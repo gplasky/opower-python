@@ -38,6 +38,8 @@ class Aps(UtilityBase):
         username: str,
         password: str,
         optional_mfa_secret: Optional[str],
+        mfa_token: Optional[str],
+        mfa_code: Optional[str],
     ) -> None:
         """Login to the utility website."""
         _LOGGER.debug("Starting login process for Arizona Public Service (APS)")

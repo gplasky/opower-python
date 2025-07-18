@@ -11,6 +11,17 @@ class InvalidAuth(Exception):
     """Error to indicate there is invalid auth."""
 
 
+class MfaRequired(Exception):
+    """Error to indicate there is MFA required."""
+
+    def __init__(self, mfa_token: str) -> None:
+        """Initialize the exception."""
+        super().__init__("MFA required")
+        self.mfa_token = mfa_token
+
+
+
+
 class ApiException(Exception):
     """Raised during problems talking to the API."""
 

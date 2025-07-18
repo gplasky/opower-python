@@ -32,6 +32,8 @@ class GlendaleWaterAndPower(UtilityBase):
         username: str,
         password: str,
         optional_mfa_secret: Optional[str],
+        mfa_token: Optional[str],
+        mfa_code: Optional[str],
     ) -> None:
         """Login to the utility website."""
         async with session.post(

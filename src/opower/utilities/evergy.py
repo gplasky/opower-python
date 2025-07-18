@@ -55,6 +55,8 @@ class Evergy(UtilityBase):
         username: str,
         password: str,
         optional_mfa_secret: Optional[str],
+        mfa_token: Optional[str],
+        mfa_code: Optional[str],
     ) -> str:
         """Login to the utility website."""
         login_parser = EvergyLoginParser()

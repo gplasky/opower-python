@@ -7,7 +7,7 @@ from urllib.parse import urlencode, urljoin
 import aiohttp
 
 from ..const import USER_AGENT
-from ..exceptions import InvalidAuth
+from ..exceptions import InvalidAuth, MfaRequired
 from .base import UtilityBase
 from .helpers import async_follow_forms, get_form_action_url_and_hidden_inputs
 
@@ -38,23 +38,47 @@ class PGE(UtilityBase):
         username: str,
         password: str,
         optional_mfa_secret: Optional[str],
+        mfa_token: Optional[str],
+        mfa_code: Optional[str],
     ) -> None:
         """Login to the utility website."""
-        url = "https://www.pge.com/eimpapi/auth/login"
-        _LOGGER.debug("POST %s", url)
-        async with session.post(
-            url,
-            json={
-                "username": username,
-                "password": password,
-                "appName": "CustomerSSO",
-            },
-            headers={"User-Agent": USER_AGENT},
-            raise_for_status=True,
-        ) as resp:
-            result = await resp.json()
-            if "errorMsg" in result:
-                raise InvalidAuth(result["errorMsg"])
+        if mfa_token and mfa_code:
+            # MFA code is submitted, continuing login flow.
+            url = "https://www.pge.com/eimpapi/auth/login"
+            _LOGGER.debug("POST %s", url)
+            async with session.post(
+                url,
+                json={
+                    "username": username,
+                    "mfaCode": mfa_code,
+                    "mfaToken": mfa_token,
+                    "appName": "CustomerSSO",
+                },
+                headers={"User-Agent": USER_AGENT},
+                raise_for_status=True,
+            ) as resp:
+                result = await resp.json()
+                if "errorMsg" in result:
+                    raise InvalidAuth(result["errorMsg"])
+        else:
+            # Initial login.
+            url = "https://www.pge.com/eimpapi/auth/login"
+            _LOGGER.debug("POST %s", url)
+            async with session.post(
+                url,
+                json={
+                    "username": username,
+                    "password": password,
+                    "appName": "CustomerSSO",
+                },
+                headers={"User-Agent": USER_AGENT},
+                raise_for_status=True,
+            ) as resp:
+                result = await resp.json()
+                if "errorMsg" in result:
+                    raise InvalidAuth(result["errorMsg"])
+                if "mfaToken" in result:
+                    raise MfaRequired(result["mfaToken"])
 
         url = ("https://itiamping.cloud.pge.com/idp/startSSO.ping?") + urlencode(
             {

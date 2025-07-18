@@ -64,6 +64,8 @@ class Mercury(UtilityBase):
         username: str,
         password: str,
         optional_mfa_secret: Optional[str],
+        mfa_token: Optional[str],
+        mfa_code: Optional[str],
     ) -> Optional[str]:
         """Perform the login process and return an access token."""
         _LOGGER.debug("Starting login process for Mercury NZ Limited")

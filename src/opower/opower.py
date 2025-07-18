@@ -176,6 +176,8 @@ class Opower:
         username: str,
         password: str,
         optional_mfa_secret: Optional[str] = None,
+        mfa_token: Optional[str] = None,
+        mfa_code: Optional[str] = None,
     ) -> None:
         """Initialize."""
         # Note: Do not modify default headers since Home Assistant that uses this library needs to use
@@ -185,6 +187,8 @@ class Opower:
         self.username: str = username
         self.password: str = password
         self.optional_mfa_secret: Optional[str] = optional_mfa_secret
+        self.mfa_token: Optional[str] = mfa_token
+        self.mfa_code: Optional[str] = mfa_code
         self.access_token: Optional[str] = None
         self.customers: list[Any] = []
         self.user_accounts: list[Any] = []
@@ -194,20 +198,25 @@ class Opower:
         """Login to the utility website and authorize opower.com for access.
 
         :raises InvalidAuth: if login information is incorrect
+        :raises MfaRequired: if MFA is required
         :raises CannotConnect: if we receive any HTTP error
         """
         try:
             self.access_token = await self.utility.async_login(
-                self.session, self.username, self.password, self.optional_mfa_secret
+                self.session,
+                self.username,
+                self.password,
+                self.optional_mfa_secret,
+                self.mfa_token,
+                self.mfa_code,
             )
 
         except ClientResponseError as err:
             if err.status in (401, 403):
-                raise InvalidAuth(err)
-            else:
-                raise CannotConnect(err)
+                raise InvalidAuth(err) from err
+            raise CannotConnect(err) from err
         except ClientError as err:
-            raise CannotConnect(err)
+            raise CannotConnect(err) from err
 
     async def async_get_accounts(self) -> list[Account]:
         """Get a list of accounts for the signed in user.

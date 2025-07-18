@@ -67,6 +67,8 @@ class DuquesneLight(UtilityBase):
         username: str,
         password: str,
         optional_mfa_secret: Optional[str],
+        mfa_token: Optional[str],
+        mfa_code: Optional[str],
     ) -> str:
         """Login to the utility website."""
         # Double-logins are somewhat broken if cookies stay around.
